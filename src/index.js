@@ -62,7 +62,7 @@ pages.forEach(function(pathname) {
 });
 
 avalon.history.start({
-    root: "/test/second"
+    root: "/bb/second"
 });
 
 avalon.ready(function() {
