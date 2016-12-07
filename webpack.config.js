@@ -10,7 +10,7 @@ var webpack = require('webpack');
  * verify config
  * （验证config文件是否正确）
  * */
-var validate = require('webpack-validator');
+//var validate = require('webpack-validator');
 
 /*
  * clean publishing directory
