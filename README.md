@@ -1,0 +1,1 @@
+# webpack-avalon2-SPA-seed
