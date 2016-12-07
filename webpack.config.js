@@ -42,7 +42,7 @@ var Merge = require('webpack-merge');
  * auto open browser
  * （自动打开浏览器）
  * */
-var OpenBrowserPlugin = require('open-browser-webpack-plugin');
+//var OpenBrowserPlugin = require('open-browser-webpack-plugin');
 
 /*
  *  Detect how npm is run and branch based on that
@@ -505,7 +505,8 @@ if (devServer) {
     );
 }
 
-module.exports = validate(config);
+//module.exports = validate(config);
+module.exports = config;
 
 
 
