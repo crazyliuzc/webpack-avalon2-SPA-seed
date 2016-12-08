@@ -28,7 +28,7 @@
   },
   "config": {
     "devHost": "localhost",
-    "devPort": 80,
+    "devPort": 10086,
     "devApi": "",
     "devPic": ""
   }
