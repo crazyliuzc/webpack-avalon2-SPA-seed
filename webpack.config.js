@@ -107,7 +107,7 @@ var PATHS = {
      * publish path
      * （发布目录）
      * */
-    publicPath: devServer ? '/silk-platform-mobile/dist/' : './',
+    publicPath: devServer ? '/webpack-avalon2-SPA-seed/dist/' : './',
 
 
     /*
