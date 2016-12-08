@@ -16,7 +16,7 @@ var webpack = require('webpack');
  * clean publishing directory
  * （清空发布目录）
  * */
-var CleanWebpackPlugin = require('clean-webpack-plugin');
+// var CleanWebpackPlugin = require('clean-webpack-plugin');
 
 /*
  * create html
@@ -337,11 +337,11 @@ var plugins = [
      * clean publishing directory
      * （发布前清空发布目录）
      * */
-    new CleanWebpackPlugin(['dist'], {
+    /*new CleanWebpackPlugin(['dist'], {
         root: '', // An absolute path for the root  of webpack.config.js
         verbose: true,// Write logs to console.
         dry: false // Do not delete anything, good for testing.
-    }),
+    }),*/
 
 
     /*
