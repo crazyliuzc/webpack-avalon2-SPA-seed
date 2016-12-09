@@ -1,7 +1,7 @@
 var heredoc = require('heredoc');
 require('pagination');
 function genData(n) {
-    var list = []
+    var list = [];
     for (var i = 0; i < n; i++) {
         list.push({
             aaa: new Date - i,
@@ -20,12 +20,12 @@ function genData(n) {
     data: genData(300),
     ready: function (e) {
         e.vmodel.$watch('currentPage', function (a) {
-            vm.start = a - 1
+            vm.start = a - 1;
             avalon.log(vm.start)
         })
     },
     ddd: 'bbb'
-})
+});
 
  avalon.component('ms-grid', {
         template: heredoc(function () {
@@ -38,6 +38,6 @@ function genData(n) {
              */
         }),
         defaults: {}
-    })
+ });
     
-module.exports = vm
+module.exports = vm;

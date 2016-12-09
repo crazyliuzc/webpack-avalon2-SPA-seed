@@ -50,7 +50,7 @@ function getPage(path) {
     return html
 }
 
-var pages = ["aa/first","bb/second"];
+var pages = ["aa/first","bb/second","cc/third"];
 pages.forEach(function(pathname) {
     var html = require('./html/' + pathname + '.html');
     var vm = require('./js/' + pathname + '.js');
