@@ -44,7 +44,7 @@ $ npm run dev-hrm
 ├─package.json # npm的配置文件
 ├─webpack.config.js # 开发环境的webpack配置文件
 ├─npm-scripts # 开发环境的webpack辅助配置文件（包含清空dist和node_modules目录的配置文件）
-├─src # 当前项目的源码
+└─src # 当前项目的源码
     ├─components # avalon组件存放地（只能有js）
     ├─html # 各个页面独有的部分（只有该页面的html）
     │  ├─aa # 业务模块
@@ -53,14 +53,14 @@ $ npm run dev-hrm
     │  │  ├─second.html # 具体页面
     │  └─cc # 业务模块
     │      ├─third.html # 具体页面
-    └─js # 各个页面独有的部分（入口js文件）
+    ├─js # 各个页面独有的部分（入口js文件）
     │  ├─aa # 业务模块
     │  │  └─first.js # 具体js
     │  ├─bb # 业务模块
     │  │  ├─second.js # 具体js
     │  └─cc # 业务模块
     │      ├─third.js # 具体js
-    └─index.html # 单页面应用主页
+    ├─index.html # 单页面应用主页
     └─index.js # 单页面应用入口js文件（包括路由设置）
 ```
 
