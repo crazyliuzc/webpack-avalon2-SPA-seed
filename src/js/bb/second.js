@@ -39,5 +39,7 @@ function genData(n) {
         }),
         defaults: {}
  });
-    
+avalon.ready(function () {
+    avalon.vmodels['root'].headerPage = '<p>this is headerPage,second</p>';
+});
 module.exports = vm;

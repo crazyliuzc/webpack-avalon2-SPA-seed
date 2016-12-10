@@ -39,6 +39,7 @@ avalon.component('ms-view', {
             var vm = state.vm;
             var render = vm.render;
             render && render.dispose();
+            avalon.log(_.now()+"***********id:"+vm.$id+"++++path:"+path);
             delete avalon.vmodels[vm.$id]
         }
     }

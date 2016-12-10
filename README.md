@@ -3,8 +3,11 @@
 ## 项目介绍
 本项目是一个参考诸多大神项目，利用webpack整合avalon2.2.2的简单项目：
 - 整合avalon最新主干代码
-- 加入官网路由例子（目前问题还存在不少，使用avalon.js路由跳转成功，但是第二次切换至grid页时翻页报错；
-  使用avalon.modern.js路由报错）
+- 加入官网路由例子（目前问题还存在不少:
+  使用avalon.modern.js，路由报错，各个页面功能不正常；
+  使用avalon.js，路由可以跳转，但跳转后前个路由页面没有清除，导致再次跳转回该页面时先前效果仍在，翻页错乱；
+  在各个页面入口js中添加avalon.ready代码编辑模版页面，意图切换路由出现不同效果，但失败了，avalon.ready
+  代码会在路由加载时直接执行，导致只会出现最后一个效果）
 - 加入https://github.com/RubyLouvre/avalon/issues/1815中jinwyp大神写的最佳表单验证实践（使用avalon.modern.js报错）
 - 目前html、js、css可以直接打包出来，但是整合图片和按需加载css还在解决中
 
@@ -60,7 +63,7 @@ $ npm run dev-hrm
     │  │  ├─second.js # 具体js
     │  └─cc # 业务模块
     │      ├─third.js # 具体js
-    ├─index.html # 单页面应用主页
+    ├─index.html # 单页面应用主页（模版）
     └─index.js # 单页面应用入口js文件（包括路由设置）
 ```
 

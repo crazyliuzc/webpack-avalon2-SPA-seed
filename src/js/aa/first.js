@@ -60,4 +60,7 @@ model.array = [
     { id: "d1", name: "李世民", score: 67 },
     { id: "d2", name: "赢政", score: 90 }
 ];
+avalon.ready(function () {
+    avalon.vmodels['root'].headerPage = '<p>this is headerPage,first</p>';
+});
 module.exports = vm;
