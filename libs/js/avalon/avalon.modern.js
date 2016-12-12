@@ -1,5 +1,5 @@
 /*!
-built in 2016-12-9:0:8 version 2.2.2 by 司徒正美
+built in 2016-12-12:22:51 version 2.2.2 by 司徒正美
 https://github.com/RubyLouvre/avalon/tree/2.2.1
       fix ms-controller BUG, 上下VM相同时,不会进行合并
 ms-for不再生成代理VM
@@ -2374,6 +2374,7 @@ IE7的checked属性应该使用defaultChecked来设置
     var eventProto = {
         webkitMovementY: 1,
         webkitMovementX: 1,
+        keyLocation: 1,
         fixEvent: function fixEvent() {},
         preventDefault: function preventDefault() {
             var e = this.originalEvent || {}
@@ -3323,11 +3324,7 @@ IE7的checked属性应该使用defaultChecked来设置
         set: function set(newValue) {
             var oldValue = this.value
             if (newValue !== oldValue) {
-                if (Array.isArray(newValue) && oldValue && oldValue.pushArray) {
-                    oldValue.length = 0
-                    oldValue.pushArray(newValue)
-                    newValue = oldValue
-                } else if (avalon$2.isObject(newValue)) {
+                if (avalon$2.isObject(newValue)) {
                     var hash = oldValue && oldValue.$hashcode
                     var childVM = platform.createProxy(newValue, this)
                     if (childVM) {
@@ -3546,7 +3543,7 @@ IE7的checked属性应该使用defaultChecked来设置
             if ($proxyItemBackdoor) {
                 if (!$proxyItemBackdoorMap[key]) {
                     $proxyItemBackdoorMap[key] = 1
-                    avalon$2.warn('ms-for中的变量不再建议以$为前缀')
+                    avalon$2.warn('ms-for\u4E2D\u7684\u53D8\u91CF' + key + '\u4E0D\u518D\u5EFA\u8BAE\u4EE5$\u4E3A\u524D\u7F00')
                 }
                 return true
             }
@@ -3593,6 +3590,7 @@ IE7的checked属性应该使用defaultChecked来设置
         platform.afterCreate(vm, core, keys)
         return vm
     }
+
     function createAccessor(key, val, isComputed) {
         var mutation = null
         var Accessor = isComputed ? Computed : Mutation
@@ -3856,11 +3854,9 @@ IE7的checked属性应该使用defaultChecked来设置
                 return '☥' + str + '☥'
             }
 
-            var updateTrack = function updateTrack(target, name, value, isComputed) {
+            var updateTrack = function updateTrack(target, name) {
                 var arr = target.$track.match(/[^☥]+/g) || []
                 arr.push(name)
-                var Observable = isComputed ? Computed : Mutation
-                target.$accessors[name] = new Observable(name, value, target)
                 target.$track = arr.sort().join('☥')
             }
 
@@ -3903,7 +3899,6 @@ IE7的checked属性应该使用defaultChecked来设置
                         }
                     }
                     for (var _i5 in $computed) {
-
                         vm[_i5] = $computed[_i5]
                     }
                 }
@@ -3935,28 +3930,33 @@ IE7的checked属性应该使用defaultChecked来设置
                     return target[name]
                 },
                 set: function set(target, name, value) {
-                    if (name === '$model') {
+                    if (name === '$model' || name === '$track') {
                         return true
                     }
-                    if (name === '$computed') {
+                    if (name in $$skipArray) {
                         target[name] = value
                         return true
                     }
 
-                    var oldValue = target[name]
+                    var ac = target.$accessors
+                    var oldValue = ac[name] ? ac[name].value : target[name]
+
                     if (oldValue !== value) {
+                        if (!target.hasOwnProperty(name)) {
+                            updateTrack(target, name)
+                        }
                         if (canHijack(name, value, target.$proxyItemBackdoor)) {
-                            var mutations = target.$accessors
                             var $computed = target.$computed || {}
                             //如果是新属性
-                            if (!(name in $$skipArray) && !mutations[name]) {
-                                updateTrack(target, name, value, !!$computed[name])
-                                //   var a = mutations[name].get()
+                            if (!ac[name]) {
+                                target[name] = value //必须设置，用于hasOwnProperty
+                                var isComputed = !!$computed[name]
+                                var Observable = isComputed ? Computed : Mutation
+                                ac[name] = new Observable(name, value, target)
                                 return true
                             }
-                            var mutation = mutations[name]
+                            var mutation = ac[name]
                             //创建子对象
-
                             mutation.set(value)
                             target[name] = mutation.value
                         } else {
@@ -3966,18 +3966,19 @@ IE7的checked属性应该使用defaultChecked来设置
                     // set方法必须返回true, 告诉Proxy已经成功修改了这个值,否则会抛
                     //'set' on proxy: trap returned falsish for property xxx 错误
                     return true
-                },
-                has: function has(target, name) {
-                    return target.hasOwnProperty(name)
                 }
+                //has 只能用于 in 操作符，没什么用删去
+
             }
 
-            platform.itemFactory = function itemFactory(before, after) {
+
+            avalon$2.itemFactory = platform.itemFactory = function itemFactory(before, after) {
                 var definition = before.$model
                 definition.$proxyItemBackdoor = true
                 definition.$id = before.$hashcode + String(after.hashcode || Math.random()).slice(6)
                 definition.$accessors = avalon$2.mix({}, before.$accessors)
                 var vm = platform.modelFactory(definition)
+                vm.$track = before.$track
                 for (var i in after.data) {
                     vm[i] = after.data[i]
                 }
@@ -4842,7 +4843,6 @@ IE7的checked属性应该使用defaultChecked来设置
                 this.fragments = this.fragments || []
                 mountList(this)
             } else {
-                //  collectInFor(this)
                 diffList(this)
                 updateList(this)
             }
@@ -4881,6 +4881,7 @@ IE7的checked属性应该使用defaultChecked来设置
                 instance.preFragments = instance.fragments
                 avalon$2.each(obj, function (key, value) {
                     var k = array ? getTraceKey(value) : key
+
                     fragments.push({
                         key: k,
                         val: value,
@@ -4931,6 +4932,7 @@ IE7的checked属性应该使用defaultChecked来设置
                 delete fragment._dispose
                 fragment.oldIndex = fragment.index
                 fragment.index = index // 相当于 c.index
+                resetVM(fragment.vm, instance.keyName)
                 fragment.vm[instance.keyName] = instance.isArray ? index : fragment.key
                 saveInCache(newCache, fragment)
             } else {
@@ -4953,7 +4955,6 @@ IE7的checked属性应该使用defaultChecked来设置
             } else {
 
                 c = new VFragment([], c.key, c.val, c.index)
-
                 fragment = FragmentDecorator(c, instance, c.index)
                 list.push(fragment)
             }
@@ -4965,6 +4966,10 @@ IE7的checked属性应该使用defaultChecked来设置
             return a.index - b.index
         })
         instance.cache = newCache
+    }
+
+    function resetVM(vm, a, b) {
+        vm.$accessors[a].value = NaN
     }
 
     function updateList(instance) {
@@ -4981,7 +4986,11 @@ IE7的checked属性应该使用defaultChecked来设置
             }
             if (item.oldIndex !== item.index) {
                 var f = item.toFragment()
-                parent.insertBefore(f, before.nextSibling || end)
+                var isEnd = before.nextSibling === null
+                parent.insertBefore(f, before.nextSibling)
+                if (isEnd && !parent.contains(end)) {
+                    parent.insertBefore(end, before.nextSibling)
+                }
             }
             before = item.split
         }
@@ -5009,6 +5018,7 @@ IE7的checked属性应该使用defaultChecked来设置
         var vm = fragment.vm = platform.itemFactory(instance.vm, {
             data: data
         })
+
         if (instance.isArray) {
             vm.$watch(instance.valName, function (a) {
                 if (instance.value && instance.value.set) {
@@ -5518,13 +5528,14 @@ IE7的checked属性应该使用defaultChecked来设置
         if (elem.value === field.value) {
             return
         }
+        /* istanbul ignore if*/
         if (elem.caret) {
             try {
                 var pos = field.getCaret(elem)
                 field.pos = pos
             } catch (e) {}
         }
-
+        /* istanbul ignore if*/
         if (field.debounceTime > 4) {
             var timestamp = new Date()
             var left = timestamp - field.time || 0
@@ -5942,33 +5953,36 @@ IE7的checked属性应该使用defaultChecked来设置
             /* istanbul ignore if */
             if (typeof Promise !== 'function') {
                 //avalon-promise不支持phantomjs
-                avalon$2.error('please npm install es6-promise or bluebird')
+                avalon$2.wain('please npm install es6-promise or bluebird')
             }
             /* istanbul ignore if */
             if (elem.disabled) return
             var rules = field.rules
+            var ngs = [],
+                isOk = true
             if (!(rules.norequired && value === '')) {
                 for (var ruleName in rules) {
                     var ruleValue = rules[ruleName]
                     if (ruleValue === false) continue
                     var hook = avalon$2.validators[ruleName]
-                    var resolve, reject
+                    var resolve
                     promises.push(new Promise(function (a, b) {
                         resolve = a
-                        reject = b
                     }))
                     var next = function next(a) {
+                        var reason = {
+                            element: elem,
+                            data: field.data,
+                            message: elem.getAttribute('data-' + ruleName + '-message') || elem.getAttribute('data-message') || hook.message,
+                            validateRule: ruleName,
+                            getMessage: getMessage
+                        }
                         if (a) {
                             resolve(true)
                         } else {
-                            var reason = {
-                                element: elem,
-                                data: field.data,
-                                message: elem.getAttribute('data-' + ruleName + '-message') || elem.getAttribute('data-message') || hook.message,
-                                validateRule: ruleName,
-                                getMessage: getMessage
-                            }
-                            resolve(reason)
+                            isOk = false
+                            ngs.push(reason)
+                            resolve(false)
                         }
                     }
                     field.data = {}
@@ -5979,19 +5993,19 @@ IE7的checked属性应该使用defaultChecked来设置
 
             //如果promises不为空，说明经过验证拦截器
             return Promise.all(promises).then(function (array) {
-                var reasons = array.filter(function (el) {
-                    return typeof el === 'object'
-                })
                 if (!isValidateAll) {
                     var validator = field.validator
-                    if (reasons.length) {
-                        validator.onError.call(elem, reasons, event)
+                    if (isOk) {
+                        validator.onSuccess.call(elem, [{
+                            data: field.data,
+                            element: elem
+                        }], event)
                     } else {
-                        validator.onSuccess.call(elem, reasons, event)
+                        validator.onError.call(elem, ngs, event)
                     }
-                    validator.onComplete.call(elem, reasons, event)
+                    validator.onComplete.call(elem, ngs, event)
                 }
-                return reasons
+                return ngs
             })
         }
     })
@@ -6785,7 +6799,8 @@ IE7的checked属性应该使用defaultChecked来设置
         },
 
         update: function update(vdom, value) {
-            this.oldValue = value //★★防止递归
+            //this.oldValue = value //★★防止递归
+
             switch (this.readyState) {
                 case 0:
                     if (this.reInit) {
@@ -6802,7 +6817,11 @@ IE7的checked属性应该使用defaultChecked来设置
                     avalon$2.transaction(function () {
                         for (var i in value) {
                             if (comVm.hasOwnProperty(i)) {
-                                comVm[i] = value[i]
+                                if (Array.isArray(value[i])) {
+                                    comVm[i] = value[i].concat()
+                                } else {
+                                    comVm[i] = value[i]
+                                }
                             }
                         }
                     })
@@ -6812,6 +6831,7 @@ IE7的checked属性应该使用defaultChecked来设置
                     delete avalon$2.viewChanging
                     break
             }
+            this.value = avalon$2.mix(true, {}, value)
         },
         beforeDispose: function beforeDispose() {
             var comVm = this.comVm

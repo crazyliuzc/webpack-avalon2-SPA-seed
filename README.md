@@ -3,8 +3,7 @@
 ## 项目介绍
 本项目是一个参考诸多大神项目，利用webpack整合avalon2.2.2的简单项目：
 - 整合avalon最新主干代码
-- 加入官网路由例子（目前问题还存在不少，使用avalon.js路由跳转成功，但是第二次切换至grid页时翻页报错；
-  使用avalon.modern.js路由报错）
+- 加入官网路由例子（目前还存在一些问题，使用avalon.js或avalon.modern.js都可以路由跳转成功，但是IE8下不能运行，前次路由页数据无法统一清除）
 - 加入https://github.com/RubyLouvre/avalon/issues/1815中jinwyp大神写的最佳表单验证实践（使用avalon.modern.js报错）
 - 目前html、js、css可以直接打包出来，但是整合图片和按需加载css还在解决中
 
