@@ -21,5 +21,7 @@ var vm = avalon.define({
         }
     }
 });
-
+avalon.ready(function () {
+    avalon.vmodels['root'].headerPage = '<p>this is headerPage,third</p>';
+});
 module.exports = vm;
