@@ -579,7 +579,7 @@
                 return
             }
             //2. 不是左键点击或使用组合键
-            if (e.ctrlKey || e.metaKey || e.shiftKey || e.which === 2 || e.button === 2) {
+            if (e.ctrlKey || e.metaKey || e.shiftKey || e.which === 2 ) {
                 return
             }
             //3. 此事件已经被阻止
@@ -594,6 +594,7 @@
                     return
                 }
             }
+            
             //5. 没有定义href属性或在hash模式下,只有一个#
             //IE6/7直接用getAttribute返回完整路径
             var href = el.getAttribute('href', 2) || el.getAttribute("xlink:href") || ''
@@ -602,7 +603,7 @@
             }
 
             //6. 目标链接是用于下载资源或指向外部
-            if (el.hasAttribute('download') || el.getAttribute('rel') === 'external')
+            if (el.getAttribute('download') != null || el.getAttribute('rel') === 'external')
                 return
 
             //7. 只是邮箱地址
