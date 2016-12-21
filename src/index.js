@@ -1,11 +1,12 @@
-﻿avalon.config({
+﻿require('es6-promise').polyfill();
+avalon.config({
     debug: true
 });
 var root = avalon.define({
     $id: 'root',
     headerPage: '<p>this is headerPage</p>',//头部页面
     footerPage: '<p>this is footerPage</p>',//尾部页面
-    currPath: '',//当前路径
+    currPath: '',//当前路径k
     currPage: ''//当前页面
 });
 
@@ -29,7 +30,6 @@ avalon.component('ms-view', {
             var state = states[path];
             avalon.vmodels[state.vm.$id] = state.vm;
             setTimeout(function() {//必须等它扫描完这个template,才能替换
-                // e.vmodel.page = '<div><p>hello world</p></div>';
                 e.vmodel.page = state.html
             },100)
         },
@@ -39,7 +39,6 @@ avalon.component('ms-view', {
             var vm = state.vm;
             var render = vm.render;
             render && render.dispose();
-            avalon.log(_.now()+"***********id:"+vm.$id+"++++path:"+path);
             delete avalon.vmodels[vm.$id]
         }
     }
@@ -61,7 +60,6 @@ pages.forEach(function(pathname) {
         root.currPage = getPage(this.path);
     })
 });
-
 avalon.history.start({
     root: "/bb/second"
 });

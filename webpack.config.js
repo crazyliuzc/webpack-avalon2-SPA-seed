@@ -156,10 +156,10 @@ var resolve = {
          * js
          */
         jquery: path.join(PATHS.libsPath, "js/jquery/jquery.js"),
-        // avalon2: path.join(PATHS.libsPath, "js/avalon/avalon.modern.js"),
-        avalon2: path.join(PATHS.libsPath, "js/avalon/avalon.js"),
+        avalon2: path.join(PATHS.libsPath, "js/avalon/avalon.modern.js"),
+        // avalon2: path.join(PATHS.libsPath, "js/avalon/avalon.js"),
         mmRouter: path.join(PATHS.libsPath, "js/avalon/mmRouter.js"),
-        lodash: path.join(PATHS.libsPath, "js/lodash.js"),
+        lodash: path.join(PATHS.libsPath, "js/lodash.min.js"),
 
         /*
          * components
@@ -182,7 +182,7 @@ var resolve = {
  * */
 var entry = Object.assign(file_js,file_components, {
     // 路由入口
-    index: './src/index.js',
+    index: ['./src/index.js'],
     // 用到什么公共lib（例如jquery.js），就把它加进common去，目的是将公用库单独提取打包
     common: [
         'jquery','avalon2','lodash','mmRouter'

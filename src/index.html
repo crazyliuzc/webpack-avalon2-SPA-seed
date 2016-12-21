@@ -4,7 +4,6 @@
 <head>
     <meta charset="utf-8">
     <title>webpack-avalon2-SPA-seed</title>
-    <script src='./promise.js'></script>
     <script>
         if (!Array.prototype.indexOf) {
             Array.prototype.indexOf = function (item, i) {
@@ -18,7 +17,7 @@
             };
         }
         if (!window.WebSocket) {
-            window.WebSocket = function () { }
+            window.WebSocket = function () { };
             window.WebSocket.prototype = {
                 onmessage: function () { },
                 onclose: function () { },
