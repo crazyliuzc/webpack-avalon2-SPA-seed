@@ -19,7 +19,11 @@ var vm = avalon.define({
             if (vm.errorInputName.indexOf(this.id.toString()) === -1) vm.errorInputName.push(this.id.toString());
 
         }
-    }
+    },
+    init: function () {
+        avalon.log("third init"+_.now());
+    },
+    xxx : require('../../img/aa/Img419362895.jpg')
 });
 avalon.ready(function () {
     avalon.vmodels['root'].headerPage = '<p>this is headerPage,third</p>';

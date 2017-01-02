@@ -6,15 +6,13 @@
 - 加入官网路由例子
 - 加入https://github.com/RubyLouvre/avalon/issues/1815中jinwyp大神写的最佳表单验证实践
 - 加入es6-promise
+- 兼容IE8
 - 加载图片需要用require('图片路径')来引入
 - 目前html、js、css、图片可以直接打包出来，但是按需加载css还在解决中
 
 ## 尚未解决的问题
-目前Bug还存在不少
-- 使用avalon.modern.js或使用avalon.js路由都可以跳转，但跳转后前个路由页面数据没有统一清除；
-- 在各个页面入口js中添加avalon.ready代码编辑模版页面，意图切换路由出现不同效果，但失败了，avalon.ready
-  代码会在路由加载时直接执行，导致只会出现最后一个效果（准备在路由组件初始化时调用各个页面的制定方法解决）；
-- 使用avalon.modern.js时，在grid页面首次加载很慢，要卡一会
+- 使用avalon.modern.js或使用avalon.js路由都可以跳转，但跳转后前个路由页面数据没有统一清除，需要一一重置；
+- 使用avalon.modern.js时，在grid页面首次加载很慢，相比avalon.js要卡一会
 
 ## 使用说明
 

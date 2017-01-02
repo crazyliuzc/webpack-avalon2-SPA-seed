@@ -7,6 +7,9 @@ var vm = avalon.define({
     activeIndex: 0,
     aaa: '',
     panels: ["面板1", "面板2", '<p>这里可以是复杂的<b>HTML</b></p>'],
+    init: function () {
+        avalon.log("first init"+_.now());
+    },
     formatCard: function(e) {
         var el = e.target;
         var caret = el.selectionStart;

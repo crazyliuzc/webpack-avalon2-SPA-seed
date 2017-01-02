@@ -1,4 +1,5 @@
 ﻿require('es6-promise').polyfill();
+
 avalon.config({
     debug: true
 });
@@ -29,6 +30,7 @@ avalon.component('ms-view', {
             var path = e.vmodel.path;
             var state = states[path];
             avalon.vmodels[state.vm.$id] = state.vm;
+            avalon.vmodels[state.vm.$id].init();
             setTimeout(function() {//必须等它扫描完这个template,才能替换
                 e.vmodel.page = state.html
             },100)
@@ -56,13 +58,16 @@ pages.forEach(function(pathname) {
     var vm = require('./js/' + pathname + '.js');
     addState(pathname, vm, html);
     avalon.router.add("/"+pathname, function(a) {
+        avalon.log(this.path+"|"+_.now());
         root.currPath = this.path;
         root.currPage = getPage(this.path);
     })
 });
+
 avalon.history.start({
     root: "/bb/second"
 });
+// avalon.history.setHash('/bb/second');
 
 avalon.ready(function() {
     avalon.scan(document.body)

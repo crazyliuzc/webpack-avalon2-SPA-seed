@@ -1,5 +1,5 @@
 /*!
-built in 2016-12-23:2:32 version 2.2.3 by 司徒正美
+built in 2017-1-1:12:27 version 2.2.3 by 司徒正美
 https://github.com/RubyLouvre/avalon/tree/2.2.3
 
 
@@ -8,6 +8,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
 处理expr的null undefined情况     
 修正error函数参数顺序导致的错误
 支持组件继承(对象形式与函数形式皆可)
+添加对安卓4.4， safari7, firefox50, chrome55的测试
 
 */(function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : global.avalon = factory();
@@ -461,6 +462,19 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         String.prototype.trim = function () {
             return this.replace(rtrim, '');
         };
+    }
+    if (!Object.create) {
+        Object.create = function () {
+            function F() {}
+
+            return function (o) {
+                if (arguments.length != 1) {
+                    throw new Error('Object.create implementation only accepts one parameter.');
+                }
+                F.prototype = o;
+                return new F();
+            };
+        }();
     }
     var hasDontEnumBug = !{
         'toString': null
@@ -5555,11 +5569,14 @@ avalon.bind 在绑定非元素节点也要修正事件对象
             }
 
             if (this.userCb) {
-                this.userCb.call(this.vm, {
-                    type: 'rendered',
-                    target: this.begin.dom,
-                    signature: this.signature
-                });
+                var me = this;
+                setTimeout(function () {
+                    me.userCb.call(me.vm, {
+                        type: 'rendered',
+                        target: me.begin.dom,
+                        signature: me.signature
+                    });
+                }, 0);
             }
             delete this.updating;
         },
@@ -5676,7 +5693,9 @@ avalon.bind 在绑定非元素节点也要修正事件对象
     }
 
     function resetVM(vm, a, b) {
-        vm.$accessors[a].value = NaN;
+        if (avalon.config.inProxyMode) {
+            vm.$accessors[a].value = NaN;
+        }
     }
 
     function updateList(instance) {
@@ -5917,12 +5936,13 @@ avalon.bind 在绑定非元素节点也要修正事件对象
     function setOption(vdom, values) {
         var props = vdom.props;
         if (!('disabled' in props)) {
-            var value = getOptionValue(vdom, props).trim();
+            var value = getOptionValue(vdom, props);
+            value = String(value || '').trim();
             props.selected = values.indexOf(value) !== -1;
 
             if (vdom.dom) {
                 vdom.dom.selected = props.selected;
-                var v = vdom.dom.selected;
+                var v = vdom.dom.selected; //必须加上这个,防止移出节点selected失效
             }
         }
     }
@@ -6160,21 +6180,32 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         //添加验证
 
         var rules = vdom.rules;
+        this.rules = rules;
         //将当前虚拟DOM的duplex添加到它上面的表单元素的validate指令的fields数组中
-
         if (rules && !this.validator) {
-            while (dom && dom.nodeType === 1) {
-                var validator = dom._ms_validate_;
-                if (validator) {
-                    this.rules = rules;
-                    this.validator = validator;
+            addValidate(this, dom, true);
+        }
+    }
 
-                    if (avalon.Array.ensure(validator.fields, this)) {
-                        validator.addField(this);
-                    }
-                    break;
+    function addValidate(field, dom, once) {
+        while (dom && dom.nodeType === 1) {
+            var validator = dom._ms_validate_;
+            if (validator) {
+                field.validator = validator;
+                if (avalon.Array.ensure(validator.fields, field)) {
+                    validator.addField(field);
                 }
-                dom = dom.parentNode;
+                break;
+            }
+            var p = dom.parentNode;
+            if (once && p && p.nodeType === 11) {
+                //如果input元素是循环生成的,那么它这时还没有插入到DOM树,其根节点是#document-fragment
+                setTimeout(function () {
+                    addValidate(field, dom);
+                });
+                break;
+            } else {
+                dom = p;
             }
         }
     }
@@ -6724,6 +6755,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
             delete vdom.vmValidator;
 
             dom.setAttribute('novalidate', 'novalidate');
+
             function onManual() {
                 valiDir.validateAll.call(validator, validator.onValidateAll);
             }
@@ -6802,7 +6834,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
             /* istanbul ignore if */
             if (typeof Promise !== 'function') {
                 //avalon-promise不支持phantomjs
-                avalon.warn('please npm install es6-promise or bluebird');
+                avalon.warn('浏览器不支持原生Promise,请下载并<script src=url>引入\nhttps://github.com/RubyLouvre/avalon/blob/master/test/promise.js');
             }
             /* istanbul ignore if */
             if (elem.disabled) return;
@@ -7557,12 +7589,12 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                 avalon.Array.ensure(componentQueue, this);
                 return;
             }
-            this.readyState = 1;
+
             //如果是非空元素，比如说xmp, ms-*, template
             var id = value.id || value.$id;
             var hasCache = avalon.vmodels[id];
             var fromCache = false;
-
+            // this.readyState = 1
             if (hasCache) {
                 comVm = hasCache;
                 this.comVm = comVm;
@@ -7573,6 +7605,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                     component = new component(value);
                 }
                 var comVm = createComponentVm(component, value, is);
+                this.readyState = 1;
                 fireComponentHook(comVm, vdom, 'Init');
                 this.comVm = comVm;
 
@@ -7661,6 +7694,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                 case 0:
                     if (this.reInit) {
                         this.init();
+                        this.readyState++;
                     }
                     break;
                 case 1:

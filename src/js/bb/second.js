@@ -18,10 +18,13 @@ function genData(n) {
     start: 0,
     count: 10,
     data: genData(300),
+     init: function () {
+         avalon.log("second init"+_.now());
+     },
     ready: function (e) {
+        avalon.log("second ready"+_.now());
         e.vmodel.$watch('currentPage', function (a) {
             vm.start = a - 1;
-            avalon.log(vm.start)
         })
     },
     ddd: 'bbb'

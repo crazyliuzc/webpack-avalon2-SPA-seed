@@ -5,9 +5,10 @@
     <meta charset="utf-8">
     <title>webpack-avalon2-SPA-seed</title>
     <script>
+        /*IE8兼容start*/
         if (!Array.prototype.indexOf) {
             Array.prototype.indexOf = function (item, i) {
-                //alert("prototyping...");  
+                //alert("prototyping...");
                 i || (i = 0);
                 var length = this.length;
                 if (i < 0) i = length + i;
@@ -25,6 +26,7 @@
                 close: function(){}
             }
         }
+        /*IE8兼容end*/
     </script>
 </head>
 

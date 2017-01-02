@@ -100,7 +100,6 @@ var file_components = getEntry('./src/components/**/*.?(js|html)', './src/compon
 var file_js = getEntry('./src/js/**/*.js', './src/js/');
 var file_html = getEntry('./src/html/**/*.html', './src/html/');
 var pages = Object.keys(file_html);
-console.log(JSON.stringify(pages));
 
 var PATHS = {
     /*
@@ -156,8 +155,8 @@ var resolve = {
          * js
          */
         jquery: path.join(PATHS.libsPath, "js/jquery/jquery.js"),
-        avalon2: path.join(PATHS.libsPath, "js/avalon/avalon.modern.js"),
-        // avalon2: path.join(PATHS.libsPath, "js/avalon/avalon.js"),
+        // avalon2: path.join(PATHS.libsPath, "js/avalon/avalon.modern.js"),
+        avalon2: path.join(PATHS.libsPath, "js/avalon/avalon.js"),
         mmRouter: path.join(PATHS.libsPath, "js/avalon/mmRouter.js"),
         lodash: path.join(PATHS.libsPath, "js/lodash.min.js"),
 
