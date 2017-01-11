@@ -1,7 +1,7 @@
 # webpack-avalon2-SPA-seed #
 
 ## 项目介绍
-本项目是一个参考诸多大神项目，利用webpack整合avalon2.2.3的简单项目：
+本项目是一个参考诸多大神项目，利用webpack整合avalon2.2.4和mmRouter路由的简单项目：
 - 整合avalon最新主干代码
 - 加入官网路由例子
 - 加入https://github.com/RubyLouvre/avalon/issues/1815中jinwyp大神写的最佳表单验证实践
@@ -12,7 +12,7 @@
 
 ## 尚未解决的问题
 - 使用avalon.modern.js或使用avalon.js路由都可以跳转，但跳转后前个路由页面数据没有统一清除，需要一一重置；
-- 使用avalon.modern.js时，在grid页面首次加载很慢，相比avalon.js要卡一会
+- 使用avalon.modern.js时，在grid页面(bb/second)首次加载很慢，相比avalon.js要卡好一会
 
 ## 使用说明
 

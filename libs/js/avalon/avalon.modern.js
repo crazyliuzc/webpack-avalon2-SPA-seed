@@ -1,12 +1,12 @@
 /*!
-built in 2016-12-30:11:31 version 2.2.3 by 司徒正美
-https://github.com/RubyLouvre/avalon/tree/2.2.3
+built in 2017-1-10:21:14 version 2.2.4 by 司徒正美
+https://github.com/RubyLouvre/avalon/tree/2.2.4
 
-fix VElement hackIE BUG
-avalon.bind 在绑定非元素节点也要修正事件对象 
-处理expr的null undefined情况     
-修正error函数参数顺序导致的错误
-支持组件继承(对象形式与函数形式皆可)
+更改下载Promise的提示
+修正IE下 orderBy BUG
+修复ms-for在循环利用对象数组的元素时,旧有元素的指令没有进行刷新的BUG
+修复effect内部传参 BUG
+重构ms-validate的绑定事件的机制
 
 */;(function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : global.avalon = factory()
@@ -410,7 +410,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         inspect: inspect,
         ohasOwn: ohasOwn,
         rword: rword,
-        version: "2.2.3",
+        version: "2.2.4",
         vmodels: {},
 
         directives: directives,
@@ -889,6 +889,31 @@ avalon.bind 在绑定非元素节点也要修正事件对象
     locate.SHORTMONTH = locate.MONTH
     dateFilter.locate = locate
 
+    /**
+    $$skipArray:是系统级通用的不可监听属性
+    $skipArray: 是当前对象特有的不可监听属性
+    
+     不同点是
+     $$skipArray被hasOwnProperty后返回false
+     $skipArray被hasOwnProperty后返回true
+     */
+    var falsy
+    var $$skipArray = {
+        $id: falsy,
+        $render: falsy,
+        $track: falsy,
+        $element: falsy,
+        $computed: falsy,
+        $watch: falsy,
+        $fire: falsy,
+        $events: falsy,
+        $accessors: falsy,
+        $hashcode: falsy,
+        $mutations: falsy,
+        $vbthis: falsy,
+        $vbsetter: falsy
+    }
+
     /*
     https://github.com/hufyhang/orderBy/blob/master/index.js
     */
@@ -903,20 +928,16 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         }
         var mapping = {}
         var temp = []
-        var index = 0
-        for (var key in array) {
-            if (array.hasOwnProperty(key)) {
-                var val = array[key]
-                var k = criteria(val, key)
-                if (k in mapping) {
-                    mapping[k].push(key)
-                } else {
-                    mapping[k] = [key]
-                }
-
-                temp.push(k)
+        __repeat(array, Array.isArray(array), function (key) {
+            var val = array[key]
+            var k = criteria(val, key)
+            if (k in mapping) {
+                mapping[k].push(key)
+            } else {
+                mapping[k] = [key]
             }
-        }
+            temp.push(k)
+        })
 
         temp.sort()
         if (decend < 0) {
@@ -933,13 +954,31 @@ avalon.bind 在绑定非元素节点也要修正事件对象
             }
         })
     }
+
+    function __repeat(array, isArray$$1, cb) {
+        if (isArray$$1) {
+            array.forEach(function (val, index) {
+                cb(index)
+            })
+        } else if (typeof array.$track === 'string') {
+            array.$track.replace(/[^☥]+/g, function (k) {
+                cb(k)
+            })
+        } else {
+            for (var i in array) {
+                if (array.hasOwnProperty(i)) {
+                    cb(i)
+                }
+            }
+        }
+    }
     function filterBy(array, search) {
         var type = avalon$2.type(array)
         if (type !== 'array' && type !== 'object') throw 'filterBy只能处理对象或数组'
         var args = avalon$2.slice(arguments, 2)
         var stype = avalon$2.type(search)
         if (stype === 'function') {
-            var criteria = search
+            var criteria = search._orig || search
         } else if (stype === 'string' || stype === 'number') {
             if (search === '') {
                 return array
@@ -952,20 +991,21 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         } else {
             return array
         }
-
-        array = convertArray(array).filter(function (el, i) {
-            return !!criteria.apply(el, [el.value, i].concat(args))
-        })
-
         var isArray$$1 = type === 'array'
         var target = isArray$$1 ? [] : {}
-        return recovery(target, array, function (el) {
-            if (isArray$$1) {
-                target.push(el.value)
-            } else {
-                target[el.key] = el.value
+        __repeat(array, isArray$$1, function (key) {
+            var val = array[key]
+            if (criteria.apply({
+                key: key
+            }, [val, key].concat(args))) {
+                if (isArray$$1) {
+                    target.push(val)
+                } else {
+                    target[key] = val
+                }
             }
         })
+        return target
     }
 
     function selectBy(data, array, defaults) {
@@ -992,7 +1032,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         }
         //将目标转换为数组
         if (type === 'object') {
-            input = convertArray(input)
+            input = convertArray(input, false)
         }
         var n = input.length
         limit = Math.floor(Math.min(n, limit))
@@ -1026,19 +1066,17 @@ avalon.bind 在绑定非元素节点也要修正事件对象
 
     //Chrome谷歌浏览器中js代码Array.sort排序的bug乱序解决办法
     //http://www.cnblogs.com/yzeng/p/3949182.html
-    function convertArray(array) {
+    function convertArray(array, isArray$$1) {
         var ret = [],
             i = 0
-        for (var key in array) {
-            if (array.hasOwnProperty(key)) {
-                ret[i] = {
-                    oldIndex: i,
-                    value: array[key],
-                    key: key
-                }
-                i++
+        __repeat(array, isArray$$1, function (key) {
+            ret[i] = {
+                oldIndex: i,
+                value: array[key],
+                key: key
             }
-        }
+            i++
+        })
         return ret
     }
 
@@ -2816,30 +2854,6 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         return avalon$2.vdom(a, 'toDOM')
     }
 
-    /**
-    $$skipArray:是系统级通用的不可监听属性
-    $skipArray: 是当前对象特有的不可监听属性
-    
-     不同点是
-     $$skipArray被hasOwnProperty后返回false
-     $skipArray被hasOwnProperty后返回true
-     */
-    var falsy
-    var $$skipArray = {
-        $id: falsy,
-        $render: falsy,
-        $track: falsy,
-        $element: falsy,
-        $watch: falsy,
-        $fire: falsy,
-        $events: falsy,
-        $accessors: falsy,
-        $hashcode: falsy,
-        $mutations: falsy,
-        $vbthis: falsy,
-        $vbsetter: falsy
-    }
-
     avalon$2.pendingActions = []
     avalon$2.uniqActions = {}
     avalon$2.inTransaction = 0
@@ -3189,8 +3203,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
          * 在更新视图前保存原有的value
          */
         beforeUpdate: function beforeUpdate() {
-            var v = this.value
-            return this.oldValue = v && v.$events ? v.$model : v
+            return this.oldValue = getPlainObject(this.value)
         },
         update: function update(args, uuid) {
             var oldVal = this.beforeUpdate()
@@ -3241,6 +3254,28 @@ avalon.bind 在绑定非元素节点也要修正事件对象
             for (var i in this) {
                 delete this[i]
             }
+        }
+    }
+
+    function getPlainObject(v) {
+        if (v && typeof v === 'object') {
+            if (v && v.$events) {
+                return v.$model
+            } else if (Array.isArray(v)) {
+                var ret = []
+                for (var i, n = v.length; i < n; i++) {
+                    ret.push(getPlainObject(v[i]))
+                }
+                return ret
+            } else {
+                var _ret = {}
+                for (var _i3 in v) {
+                    _ret[_i3] = getPlainObject(v[_i3])
+                }
+                return _ret
+            }
+        } else {
+            return v
         }
     }
 
@@ -3475,7 +3510,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
     }
 
     /**
-     * 在末来的版本,avalon改用Proxy来创建VM,因此
+     * 在未来的版本,avalon改用Proxy来创建VM,因此
      */
 
     function IProxy(definition, dd) {
@@ -3833,11 +3868,13 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         for (var i = 0; i < keys.length; i++) {
             var _key2 = keys[i]
             if (!(_key2 in ac)) {
-                if (bindThis && typeof core[_key2] === 'function') {
-                    vm[_key2] = core[_key2].bind(vm)
+                var val = core[_key2]
+                if (bindThis && typeof val === 'function') {
+                    vm[_key2] = val.bind(vm)
+                    vm[_key2]._orig = val
                     continue
                 }
-                vm[_key2] = core[_key2]
+                vm[_key2] = val
             }
         }
         vm.$track = keys.join('☥')
@@ -3884,15 +3921,15 @@ avalon.bind 在绑定非元素节点也要修正事件对象
 
                 var vm = toProxy(proxy)
                 //先添加普通属性与监控属性
-                for (var _i3 in clone) {
-                    vm[_i3] = clone[_i3]
+                for (var _i4 in clone) {
+                    vm[_i4] = clone[_i4]
                 }
                 var $computed = clone.$computed
                 //再添加计算属性
                 if ($computed) {
                     delete clone.$computed
-                    for (var _i4 in $computed) {
-                        var val = $computed[_i4]
+                    for (var _i5 in $computed) {
+                        var val = $computed[_i5]
                         if (typeof val === 'function') {
                             var _val = val
                             val = { get: _val }
@@ -3902,14 +3939,14 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                             //在set方法中的target是IProxy，需要重写成Proxy，才能依赖收集
                             val.vm = vm
                             if (val.set) val.setter = val.set
-                            $computed[_i4] = val
-                            delete clone[_i4] //去掉重名的监控属性
+                            $computed[_i5] = val
+                            delete clone[_i5] //去掉重名的监控属性
                         } else {
-                            delete $computed[_i4]
+                            delete $computed[_i5]
                         }
                     }
-                    for (var _i5 in $computed) {
-                        vm[_i5] = $computed[_i5]
+                    for (var _i6 in $computed) {
+                        vm[_i6] = $computed[_i6]
                     }
                 }
 
@@ -4086,19 +4123,19 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                             patch[i] = newVal[i]
                         }
                     } else {
-                        for (var _i6 in newVal) {
+                        for (var _i7 in newVal) {
                             //diff差异点
-                            if (newVal[_i6] !== oldVal[_i6]) {
+                            if (newVal[_i7] !== oldVal[_i7]) {
                                 hasChange = true
                             }
-                            patch[_i6] = newVal[_i6]
+                            patch[_i7] = newVal[_i7]
                         }
                     }
 
-                    for (var _i7 in oldVal) {
-                        if (!(_i7 in patch)) {
+                    for (var _i8 in oldVal) {
+                        if (!(_i8 in patch)) {
                             hasChange = true
-                            patch[_i7] = ''
+                            patch[_i8] = ''
                         }
                     }
                 }
@@ -4836,7 +4873,6 @@ avalon.bind 在绑定非元素节点也要修正事件对象
             if (this.updating) {
                 return
             }
-
             this.updating = true
             var traceIds = createFragments(this, newVal)
 
@@ -4905,9 +4941,11 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                 instance.fragments = fragments
             } else {
                 avalon$2.each(obj, function (key, value) {
-                    var k = array ? getTraceKey(value) : key
-                    fragments.push(new VFragment([], k, value, i++))
-                    ids.push(k)
+                    if (!(key in $$skipArray)) {
+                        var k = array ? getTraceKey(value) : key
+                        fragments.push(new VFragment([], k, value, i++))
+                        ids.push(k)
+                    }
                 })
                 instance.fragments = fragments
             }
@@ -4945,7 +4983,9 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                 delete fragment._dispose
                 fragment.oldIndex = fragment.index
                 fragment.index = index // 相当于 c.index
+
                 resetVM(fragment.vm, instance.keyName)
+                fragment.vm[instance.valName] = c.val
                 fragment.vm[instance.keyName] = instance.isArray ? index : fragment.key
                 saveInCache(newCache, fragment)
             } else {
@@ -4984,6 +5024,8 @@ avalon.bind 在绑定非元素节点也要修正事件对象
     function resetVM(vm, a, b) {
         if (avalon$2.config.inProxyMode) {
             vm.$accessors[a].value = NaN
+        } else {
+            vm.$accessors[a].set(NaN)
         }
     }
 
@@ -5033,7 +5075,6 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         var vm = fragment.vm = platform.itemFactory(instance.vm, {
             data: data
         })
-
         if (instance.isArray) {
             vm.$watch(instance.valName, function (a) {
                 if (instance.value && instance.value.set) {
@@ -5045,6 +5086,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                 instance.value[fragment.key] = a
             })
         }
+
         fragment.index = index
         fragment.innerRender = avalon$2.scan(instance.fragment, vm, function () {
             var oldRoot = this.root
@@ -5371,6 +5413,11 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                     updateDataActions[field.dtype].call(field)
                 }, left)
             }
+        } else if (field.isChanged) {
+            setTimeout(function () {
+                //https://github.com/RubyLouvre/avalon/issues/1908
+                updateDataActions[field.dtype].call(field)
+            }, 4)
         } else {
             updateDataActions[field.dtype].call(field)
         }
@@ -5428,7 +5475,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         //判定是否使用了 change debounce 过滤器
         // this.isChecked = /boolean/.test(parsers)
         if (dtype !== 'input' && dtype !== 'contenteditable') {
-            delete this.isChange
+            delete this.isChanged
             delete this.debounceTime
         } else if (!this.isChecked) {
             this.isString = true
@@ -5462,41 +5509,11 @@ avalon.bind 在绑定非元素节点也要修正事件对象
     function duplexBind(vdom, addEvent) {
         var dom = vdom.dom
         this.dom = dom
+        this.vdom = vdom
         this.duplexCb = updateDataHandle
         dom._ms_duplex_ = this
         //绑定事件
         addEvent(dom, this)
-        //添加验证
-
-        var rules = vdom.rules
-        this.rules = rules
-        //将当前虚拟DOM的duplex添加到它上面的表单元素的validate指令的fields数组中
-        if (rules && !this.validator) {
-            addValidate(this, dom, true)
-        }
-    }
-
-    function addValidate(field, dom, once) {
-        while (dom && dom.nodeType === 1) {
-            var validator = dom._ms_validate_
-            if (validator) {
-                field.validator = validator
-                if (avalon$2.Array.ensure(validator.fields, field)) {
-                    validator.addField(field)
-                }
-                break
-            }
-            var p = dom.parentNode
-            if (once && p && p.nodeType === 11) {
-                //如果input元素是循环生成的,那么它这时还没有插入到DOM树,其根节点是#document-fragment
-                setTimeout(function () {
-                    addValidate(field, dom)
-                })
-                break
-            } else {
-                dom = p
-            }
-        }
     }
 
     var valueHijack = true
@@ -5730,9 +5747,6 @@ avalon.bind 在绑定非元素节点也要修正事件对象
             if (isObject(rules)) {
                 var vdom = this.node
                 vdom.rules = platform.toJson(rules)
-                if (vdom.duplex) {
-                    vdom.duplex.rules = vdom.rules
-                }
                 return true
             }
         }
@@ -5890,7 +5904,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                 //也可以称之为safeValidate
                 vdom.vmValidator = validator
                 validator = platform.toJson(validator)
-
+                validator.vdom = vdom
                 vdom.validator = validator
                 for (var name in valiDir.defaults) {
                     if (!validator.hasOwnProperty(name)) {
@@ -5902,10 +5916,22 @@ avalon.bind 在绑定非元素节点也要修正事件对象
             }
         },
         update: function update(vdom) {
+
             var validator = vdom.validator
-            var dom = vdom.dom
-            validator.dom = dom
+            var dom = validator.dom = vdom.dom
             dom._ms_validate_ = validator
+            var fields = validator.fields
+            collectFeild(vdom.children, fields, validator)
+            avalon$2.bind(document, 'focusin', function (e) {
+                var dom = e.target
+                var duplex = dom._ms_duplex_
+                var vdom = (duplex || {}).vdom
+                if (duplex && vdom.rules && !duplex.validator) {
+                    if (avalon$2.Array.ensure(fields, duplex)) {
+                        bindValidateEvent(duplex, validator)
+                    }
+                }
+            })
 
             //为了方便用户手动执行验证，我们需要为原始vmValidate上添加一个onManual方法
             var v = vdom.vmValidator
@@ -5926,18 +5952,12 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                     onManual()
                 })
             }
-            /* istanbul ignore if */
-            if (typeof validator.onInit === 'function') {
-                //vmodels是不包括vmodel的
-                validator.onInit.call(dom, {
-                    type: 'init',
-                    target: dom,
-                    validator: validator
-                })
-            }
         },
         validateAll: function validateAll(callback) {
             var validator = this
+            var vdom = this.vdom
+            var fields = validator.fields = []
+            collectFeild(vdom.children, fields, validator)
             var fn = typeof callback === 'function' ? callback : validator.onValidateAll
             var promises = validator.fields.filter(function (field) {
                 var el = field.dom
@@ -5964,28 +5984,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                 fn.call(validator.dom, reasons) //这里只放置未通过验证的组件
             })
         },
-        addField: function addField(field) {
-            var validator = this
-            var node = field.dom
-            /* istanbul ignore if */
-            if (validator.validateInKeyup && !field.isChanged && !field.debounceTime) {
-                avalon$2.bind(node, 'keyup', function (e) {
-                    validator.validate(field, 0, e)
-                })
-            }
-            /* istanbul ignore if */
-            if (validator.validateInBlur) {
-                avalon$2.bind(node, 'blur', function (e) {
-                    validator.validate(field, 0, e)
-                })
-            }
-            /* istanbul ignore if */
-            if (validator.resetInFocus) {
-                avalon$2.bind(node, 'focus', function (e) {
-                    validator.onReset.call(node, e, field)
-                })
-            }
-        },
+
         validate: function validate(field, isValidateAll, event) {
             var promises = []
             var value = field.value
@@ -5998,7 +5997,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
             }
             /* istanbul ignore if */
             if (elem.disabled) return
-            var rules = field.rules
+            var rules = field.vdom.rules
             var ngs = [],
                 isOk = true
             if (!(rules.norequired && value === '')) {
@@ -6051,6 +6050,46 @@ avalon.bind 在绑定非元素节点也要修正事件对象
         }
     })
 
+    function collectFeild(nodes, fields, validator) {
+        for (var i = 0, vdom; vdom = nodes[i++];) {
+            var duplex = vdom.rules && vdom.duplex
+            if (duplex) {
+                fields.push(duplex)
+                bindValidateEvent(duplex, validator)
+            } else if (vdom.children) {
+                collectFeild(vdom.children, fields, validator)
+            } else if (Array.isArray(vdom)) {
+                collectFeild(vdom, fields, validator)
+            }
+        }
+    }
+
+    function bindValidateEvent(field, validator) {
+
+        var node = field.dom
+        if (field.validator) {
+            return
+        }
+        field.validator = validator
+        /* istanbul ignore if */
+        if (validator.validateInKeyup && !field.isChanged && !field.debounceTime) {
+            avalon$2.bind(node, 'keyup', function (e) {
+                validator.validate(field, 0, e)
+            })
+        }
+        /* istanbul ignore if */
+        if (validator.validateInBlur) {
+            avalon$2.bind(node, 'blur', function (e) {
+                validator.validate(field, 0, e)
+            })
+        }
+        /* istanbul ignore if */
+        if (validator.resetInFocus) {
+            avalon$2.bind(node, 'focus', function (e) {
+                validator.onReset.call(node, e, field)
+            })
+        }
+    }
     var rformat = /\\?{{([^{}]+)\}}/gm
 
     function getMessage() {
@@ -6061,7 +6100,6 @@ avalon.bind 在绑定非元素节点也要修正事件对象
     }
     valiDir.defaults = {
         validate: valiDir.validate,
-        addField: valiDir.addField, //供内部使用,收集此元素底下的所有ms-duplex的域对象
         onError: avalon$2.noop,
         onSuccess: avalon$2.noop,
         onComplete: avalon$2.noop,
@@ -6601,8 +6639,8 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                 el.dispose()
             }
             //防止其他地方的this.innerRender && this.innerRender.dispose报错
-            for (var _i8 in this) {
-                if (_i8 !== 'dispose') delete this[_i8]
+            for (var _i9 in this) {
+                if (_i9 !== 'dispose') delete this[_i9]
             }
         },
 
@@ -6749,12 +6787,12 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                 avalon$2.Array.ensure(componentQueue, this)
                 return
             }
-            this.readyState = 1
+
             //如果是非空元素，比如说xmp, ms-*, template
             var id = value.id || value.$id
             var hasCache = avalon$2.vmodels[id]
             var fromCache = false
-
+            // this.readyState = 1
             if (hasCache) {
                 comVm = hasCache
                 this.comVm = comVm
@@ -6765,6 +6803,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                     component = new component(value)
                 }
                 var comVm = createComponentVm(component, value, is)
+                this.readyState = 1
                 fireComponentHook(comVm, vdom, 'Init')
                 this.comVm = comVm
 
@@ -6853,6 +6892,7 @@ avalon.bind 在绑定非元素节点也要修正事件对象
                 case 0:
                     if (this.reInit) {
                         this.init()
+                        this.readyState++
                     }
                     break
                 case 1:
