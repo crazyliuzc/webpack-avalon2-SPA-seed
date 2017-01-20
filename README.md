@@ -11,8 +11,11 @@
 - 目前html、js、css、图片可以直接打包出来，但是按需加载css还在解决中
 
 ## 尚未解决的问题
-- 使用avalon.modern.js或使用avalon.js路由都可以跳转，但跳转后前个路由页面数据没有统一清除，需要一一重置；
+- 路由跳转后前个路由页面数据没有统一清除，目前的解决办法是自行一一重置；
 - 使用avalon.modern.js时，在grid页面(bb/second)首次加载很慢，相比avalon.js要卡好一会
+- 在路由页面dd/four中想触发id为root的顶级controller的方法，但报错TypeError: __vmodel__.getRootFun is not a function(…) "in on dir"，
+
+  在http://runjs.cn/code/2ufz7n25中单独测试controller嵌套调用方法又是正常的
 
 ## 使用说明
 

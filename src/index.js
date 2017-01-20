@@ -5,6 +5,9 @@ avalon.config({
 });
 var root = avalon.define({
     $id: 'root',
+    getRootFun: function () {
+        avalon.log('Root|'+new Date());
+    },
     headerPage: '<p>this is headerPage</p>',//头部页面
     footerPage: '<p>this is footerPage</p>',//尾部页面
     currPath: '',//当前路径k
@@ -52,13 +55,12 @@ function getPage(path) {
     return html
 }
 
-var pages = ["aa/first","bb/second","cc/third"];
+var pages = ["aa/first","bb/second","cc/third","dd/four"];
 pages.forEach(function(pathname) {
     var html = require('./html/' + pathname + '.html');
     var vm = require('./js/' + pathname + '.js');
     addState(pathname, vm, html);
     avalon.router.add("/"+pathname, function(a) {
-        avalon.log(this.path+"|"+_.now());
         root.currPath = this.path;
         root.currPage = getPage(this.path);
     })
@@ -67,6 +69,7 @@ pages.forEach(function(pathname) {
 avalon.history.start({
     root: "/bb/second"
 });
+// avalon.router.navigate('/bb/second', 0);
 // avalon.history.setHash('/bb/second');
 
 avalon.ready(function() {
