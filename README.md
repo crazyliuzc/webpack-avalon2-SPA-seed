@@ -15,7 +15,7 @@
 - 使用avalon.modern.js时，在grid页面(bb/second)首次加载很慢，相比avalon.js要卡好一会
 - 在路由页面dd/four中想触发id为root的顶级controller的方法，但报错TypeError: __vmodel__.getRootFun is not a function(…) "in on dir"，
 
-  在(http://runjs.cn/code/2ufz7n25)中单独测试controller嵌套调用方法又是正常的
+  在(**http://runjs.cn/code/2ufz7n25**)中单独测试controller嵌套调用方法又是正常的
 
 ## 使用说明
 
