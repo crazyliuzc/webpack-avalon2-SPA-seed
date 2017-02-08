@@ -4,7 +4,7 @@
 本项目是一个参考诸多大神项目，利用webpack整合avalon2.2.4和mmRouter路由的简单项目：
 - 整合avalon最新主干代码
 - 加入官网路由例子
-- 加入https://github.com/RubyLouvre/avalon/issues/1815中jinwyp大神写的最佳表单验证实践
+- 加入(https://github.com/RubyLouvre/avalon/issues/1815)中jinwyp大神写的最佳表单验证实践
 - 加入es6-promise
 - 兼容IE8
 - 加载图片需要用require('图片路径')来引入
@@ -15,7 +15,7 @@
 - 使用avalon.modern.js时，在grid页面(bb/second)首次加载很慢，相比avalon.js要卡好一会
 - 在路由页面dd/four中想触发id为root的顶级controller的方法，但报错TypeError: __vmodel__.getRootFun is not a function(…) "in on dir"，
 
-  在http://runjs.cn/code/2ufz7n25中单独测试controller嵌套调用方法又是正常的
+  在(http://runjs.cn/code/2ufz7n25)中单独测试controller嵌套调用方法又是正常的
 
 ## 使用说明
 
