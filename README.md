@@ -4,7 +4,7 @@
 本项目是一个参考诸多大神项目，利用webpack整合avalon2.2.4和mmRouter路由的简单项目：
 - 整合avalon最新主干代码
 - 加入官网路由例子
-- 加入(https://github.com/RubyLouvre/avalon/issues/1815)中jinwyp大神写的最佳表单验证实践
+- 加入(**https://github.com/RubyLouvre/avalon/issues/1815**)中jinwyp大神写的最佳表单验证实践
 - 加入es6-promise
 - 兼容IE8
 - 加载图片需要用require('图片路径')来引入
