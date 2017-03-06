@@ -6,7 +6,7 @@
 - 加入官网路由例子
 - 加入(**https://github.com/RubyLouvre/avalon/issues/1815**)中jinwyp大神写的最佳表单验证实践
 - 加入es6-promise
-- 兼容IE8
+- 兼容IE8，请替换lodash版本到3.10.1，该工具插件后面版本不支持IE8
 - 加载图片需要用require('图片路径')来引入
 - 目前html、js、css、图片可以直接打包出来，但是按需加载css还在解决中
 
