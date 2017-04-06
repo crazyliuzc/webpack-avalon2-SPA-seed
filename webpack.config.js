@@ -57,7 +57,7 @@ var debug,          // is debug
 
 if (currentTarget == "build") { // online mode （线上模式）
 
-    debug = false, devServer = false, minimize = true;
+    debug = false, devServer = false, minimize = false;
 
 } else if (currentTarget == "build-dev") { // dev mode （开发模式）
 
