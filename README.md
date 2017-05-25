@@ -16,6 +16,10 @@
 - 在路由页面dd/four中想触发id为root的顶级controller的方法，但报错TypeError: __vmodel__.getRootFun is not a function(…) "in on dir"，
 
   在(**http://runjs.cn/code/2ufz7n25**)中单独测试controller嵌套调用方法又是正常的
+  
+- 升级avalon到"2017-4-19:16:1 version 2.2.5"，页面访问正常；升级到最新版"2017-5-5:10:30 version 2.2.6"，页面卡死，浏览器卡死。
+
+  在webpack.config.js的160行可以切换
 
 ## 使用说明
 

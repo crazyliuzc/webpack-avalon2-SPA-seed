@@ -1,14 +1,14 @@
 /*!
-built in 2017-1-10:21:14 version 2.2.4 by 司徒正美
-https://github.com/RubyLouvre/avalon/tree/2.2.4
+ built in 2017-4-19:16:1 version 2.2.5 by 司徒正美
+ https://github.com/RubyLouvre/avalon/tree/2.2.4
 
-修正IE下 orderBy BUG
-更改下载Promise的提示
-修复avalon.modern 在Proxy 模式下使用ms-for 循环对象时出错的BUG
-修复effect内部传参 BUG
-重构ms-validate的绑定事件的机制
+ 修正IE下 orderBy BUG
+ 更改下载Promise的提示
+ 修复avalon.modern 在Proxy 模式下使用ms-for 循环对象时出错的BUG
+ 修复effect内部传参 BUG
+ 重构ms-validate的绑定事件的机制
 
-*/(function (global, factory) {
+ */(function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() : typeof define === 'function' && define.amd ? define(factory) : global.avalon = factory();
 })(this, function () {
     'use strict';
@@ -40,13 +40,13 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
 
     /*
      https://github.com/rsms/js-lru
-     entry             entry             entry             entry        
-     ______            ______            ______            ______       
-     | head |.newer => |      |.newer => |      |.newer => | tail |      
-     |  A   |          |  B   |          |  C   |          |  D   |      
-     |______| <= older.|______| <= older.|______| <= older.|______|      
-     
-     removed  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  added 
+     entry             entry             entry             entry
+     ______            ______            ______            ______
+     | head |.newer => |      |.newer => |      |.newer => | tail |
+     |  A   |          |  B   |          |  C   |          |  D   |
+     |______| <= older.|______| <= older.|______| <= older.|______|
+
+     removed  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  <--  added
      */
     function Cache(maxLength) {
         // 标识当前缓存数组的大小
@@ -136,7 +136,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                 // 将E的newer指向D
                 this.tail.newer = entry; // E. <-- D
             }
-            // 改变 tail 为D 
+            // 改变 tail 为D
             this.tail = entry;
             return entry.value;
         }
@@ -410,7 +410,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         inspect: inspect,
         ohasOwn: ohasOwn,
         rword: rword,
-        version: "2.2.4",
+        version: "2.2.5",
         vmodels: {},
 
         directives: directives,
@@ -921,12 +921,12 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         }
         /** //好像没有用
          var s1 = s[1] || ''
-        
-          if (s1.length < prec) {
+
+         if (s1.length < prec) {
                   s1 += new Array(prec - s[1].length + 1).join('0')
                   s[1] = s1
           }
-          **/
+         **/
         return s.join(dec);
     }
 
@@ -940,7 +940,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
     };
 
     //https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet
-    //    <a href="javasc&NewLine;ript&colon;alert('XSS')">chrome</a> 
+    //    <a href="javasc&NewLine;ript&colon;alert('XSS')">chrome</a>
     //    <a href="data:text/html;base64, PGltZyBzcmM9eCBvbmVycm9yPWFsZXJ0KDEpPg==">chrome</a>
     //    <a href="jav	ascript:alert('XSS');">IE67chrome</a>
     //    <a href="jav&#x09;ascript:alert('XSS');">IE67chrome</a>
@@ -985,7 +985,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
      'a': am/pm marker
      'Z': 4 digit (+sign) representation of the timezone offset (-1200-+1200)
      format string can also be one of the following predefined localizable formats:
-     
+
      'medium': equivalent to 'MMM d, y h:mm:ss a' for en_US locale (e.g. Sep 3, 2010 12:05:08 pm)
      'short': equivalent to 'M/d/yy h:mm a' for en_US locale (e.g. 9/3/10 12:05 pm)
      'fullDate': equivalent to 'EEEE, MMMM d,y' for en_US locale (e.g. Friday, September 3, 2010)
@@ -1198,9 +1198,9 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
     dateFilter.locate = locate;
 
     /**
-    $$skipArray:是系统级通用的不可监听属性
-    $skipArray: 是当前对象特有的不可监听属性
-    
+     $$skipArray:是系统级通用的不可监听属性
+     $skipArray: 是当前对象特有的不可监听属性
+
      不同点是
      $$skipArray被hasOwnProperty后返回false
      $skipArray被hasOwnProperty后返回true
@@ -1223,8 +1223,8 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
     };
 
     /*
-    https://github.com/hufyhang/orderBy/blob/master/index.js
-    */
+     https://github.com/hufyhang/orderBy/blob/master/index.js
+     */
 
     function orderBy(array, by, decend) {
         var type = avalon.type(array);
@@ -1304,8 +1304,8 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         __repeat(array, isArray$$1, function (key) {
             var val = array[key];
             if (criteria.apply({
-                key: key
-            }, [val, key].concat(args))) {
+                    key: key
+                }, [val, key].concat(args))) {
                 if (isArray$$1) {
                     target.push(val);
                 } else {
@@ -1466,7 +1466,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
             }
             end = typeof end === "string" ? end : "...";
             return str.length > length ? str.slice(0, length - end.length) + end : /* istanbul ignore else*/
-            str;
+                str;
         },
 
         camelize: avalon.camelize,
@@ -1674,23 +1674,23 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         }
     });
 
-    var propMap = { //不规则的属性名映射
-        'accept-charset': 'acceptCharset',
-        'char': 'ch',
-        charoff: 'chOff',
-        'class': 'className',
-        'for': 'htmlFor',
-        'http-equiv': 'httpEquiv'
-    };
+    var propMap = {}; //不规则的属性名映射
+
+
+    //防止压缩时出错
+    'accept-charset,acceptCharset|char,ch|charoff,chOff|class,className|for,htmlFor|http-equiv,httpEquiv'.replace(/[^\|]+/g, function (a) {
+        var k = a.split(',');
+        propMap[k[0]] = k[1];
+    });
     /*
-    contenteditable不是布尔属性
-    http://www.zhangxinxu.com/wordpress/2016/01/contenteditable-plaintext-only/
-    contenteditable=''
-    contenteditable='events'
-    contenteditable='caret'
-    contenteditable='plaintext-only'
-    contenteditable='true'
-    contenteditable='false'
+     contenteditable不是布尔属性
+     http://www.zhangxinxu.com/wordpress/2016/01/contenteditable-plaintext-only/
+     contenteditable=''
+     contenteditable='events'
+     contenteditable='caret'
+     contenteditable='plaintext-only'
+     contenteditable='true'
+     contenteditable='false'
      */
     var bools = ['autofocus,autoplay,async,allowTransparency,checked,controls', 'declare,disabled,defer,defaultChecked,defaultSelected,', 'isMap,loop,multiple,noHref,noResize,noShade', 'open,readOnly,selected'].join(',');
 
@@ -1781,7 +1781,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                     }
                 }
             } catch (e) {
-                // 对象不支持此属性或方法 src https://github.com/ecomfe/zrender 
+                // 对象不支持此属性或方法 src https://github.com/ecomfe/zrender
                 // 未知名称。\/n
                 // e.message大概这样,需要trim
                 //IE6-8,元素节点不支持其他元素节点的内置属性,如src, href, for
@@ -1815,9 +1815,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         }
     };
 
-    var cssMap = {
-        'float': 'cssFloat'
-    };
+    var cssMap = oneObject('float', 'cssFloat');
     avalon.cssNumber = oneObject('animationIterationCount,columnCount,order,flex,flexGrow,flexShrink,fillOpacity,fontWeight,lineHeight,opacity,orphans,widows,zIndex,zoom');
     var prefixes = ['', '-webkit-', '-o-', '-moz-', '-ms-'];
     /* istanbul ignore next */
@@ -1885,9 +1883,9 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
             offset,
             elem = this[0],
             parentOffset = {
-            top: 0,
-            left: 0
-        };
+                top: 0,
+                left: 0
+            };
         if (!elem) {
             return parentOffset;
         }
@@ -2063,7 +2061,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
 
     /* istanbul ignore if */
     if (msie < 9) {
-        cssMap['float'] = 'styleFloat';
+        avalon.shadowCopy(cssMap, oneObject('float', 'styleFloat'));
         var rnumnonpx = /^-?(?:\d*\.)?\d+(?!px)[^\d\s]+$/i;
         var rposition = /^(top|right|bottom|left)$/;
         var ralpha = /alpha\([^)]+\)/i;
@@ -2138,9 +2136,9 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         //取得距离页面左右角的坐标
         var node = this[0],
             box = {
-            left: 0,
-            top: 0
-        };
+                left: 0,
+                top: 0
+            };
         if (!node || !node.tagName || !node.ownerDocument) {
             return box;
         }
@@ -2280,7 +2278,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         return get ? val : this;
     };
 
-    /* 
+    /*
      * 将要检测的字符串的字符串替换成??123这样的格式
      */
     var stringNum = 0;
@@ -2304,12 +2302,13 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         }
         return str;
     }
-
-    function readString(str) {
-        var end,
-            s = 0;
-        var ret = [];
-        for (var i = 0, n = str.length; i < n; i++) {
+    //https://github.com/RubyLouvre/avalon/issues/1944
+    function readString(str, i, ret) {
+        var end = false,
+            s = 0,
+            i = i || 0;
+        ret = ret || [];
+        for (var n = str.length; i < n; i++) {
             var c = str.charAt(i);
             if (!end) {
                 if (c === "'") {
@@ -2325,6 +2324,9 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                     end = false;
                 }
             }
+        }
+        if (end !== false) {
+            return readString(str, s + 1, ret);
         }
         return ret;
     }
@@ -2360,8 +2362,8 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         template: 1
     };
 
-    /* 
-     *  此模块只用于文本转虚拟DOM, 
+    /*
+     *  此模块只用于文本转虚拟DOM,
      *  因为在真实浏览器会对我们的HTML做更多处理,
      *  如, 添加额外属性, 改变结构
      *  此模块就是用于模拟这些行为
@@ -2404,48 +2406,37 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
 
     //widget rule duplex validate
 
-    //如果直接将tr元素写table下面,那么浏览器将将它们(相邻的那几个),放到一个动态创建的tbody底下
+    //只有遇到第一个直接放在table下的tr元素，才会插入新tbody，并收集接下来的其他非tbody, thead, tfoot元素
+
+    var rtbody = /^(tbody|thead|tfoot)$/;
     function makeTbody(nodes) {
-        var tbody,
-            needAddTbody = false,
-            count = 0,
-            start = 0,
-            n = nodes.length;
-        for (var i = 0; i < n; i++) {
+        var tbody = false;
+        for (var i = 0, n = nodes.length; i < n; i++) {
             var node = nodes[i];
-            if (!tbody) {
-                if (node.nodeName === 'tr') {
-                    //收集tr及tr两旁的注释节点
+            if (rtbody.test(node.nodeName)) {
+                tbody = false;
+                continue;
+            }
+            if (node.nodeName === 'tr') {
+                if (tbody) {
+                    nodes.splice(i, 1);
+                    tbody.children.push(node);
+                    n--;
+                    i--;
+                } else {
                     tbody = {
                         nodeName: 'tbody',
                         props: {},
-                        children: []
+                        children: [node]
                     };
-                    tbody.children.push(node);
-                    needAddTbody = true;
-                    if (start === 0) start = i;
-                    nodes[i] = tbody;
+                    nodes.splice(i, 1, tbody);
                 }
             } else {
-                if (node.nodeName !== 'tr' && node.children) {
-                    tbody = false;
-                } else {
-                    tbody.children.push(node);
-                    count++;
-                    nodes[i] = 0;
-                }
-            }
-        }
-
-        if (needAddTbody) {
-            for (i = start; i < n; i++) {
-                if (nodes[i] === 0) {
+                if (tbody) {
                     nodes.splice(i, 1);
+                    tbody.children.push(node);
+                    n--;
                     i--;
-                    count--;
-                    if (count === 0) {
-                        break;
-                    }
                 }
             }
         }
@@ -2584,7 +2575,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                 if (i === -1) {
                     i = str.length;
                 } else if (!rtagStart.test(str.charAt(i + 1))) {
-                    //处理`内容2 {{ (idx1 < < <  1 ? 'red' : 'blue' ) + a }} ` 的情况 
+                    //处理`内容2 {{ (idx1 < < <  1 ? 'red' : 'blue' ) + a }} ` 的情况
                     i = this.fixPos(str, i);
                 }
                 var nodeValue = str.slice(0, i).replace(rfill, fill);
@@ -3240,7 +3231,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
     /**
      * ------------------------------------------------------------
      *                          DOM Api
-     * shim,class,data,css,val,html,event,ready  
+     * shim,class,data,css,val,html,event,ready
      * ------------------------------------------------------------
      */
 
@@ -3527,7 +3518,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         toDOM: function toDOM() {
             if (this.dom) return this.dom;
             var f = this.toFragment();
-            //IE6-11 docment-fragment都没有children属性 
+            //IE6-11 docment-fragment都没有children属性
             this.split = f.lastChild;
             return this.dom = f;
         },
@@ -3734,7 +3725,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
     }
 
     var keyMap = avalon.oneObject("break,case,catch,continue,debugger,default,delete,do,else,false," + "finally,for,function,if,in,instanceof,new,null,return,switch,this," + "throw,true,try,typeof,var,void,while,with," + /* 关键字*/
-    "abstract,boolean,byte,char,class,const,double,enum,export,extends," + "final,float,goto,implements,import,int,interface,long,native," + "package,private,protected,public,short,static,super,synchronized," + "throws,transient,volatile");
+        "abstract,boolean,byte,char,class,const,double,enum,export,extends," + "final,float,goto,implements,import,int,interface,long,native," + "package,private,protected,public,short,static,super,synchronized," + "throws,transient,volatile,arguments");
 
     var skipMap = avalon.mix({
         Math: 1,
@@ -3785,7 +3776,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
 
         replace(robjectKey, function (_, a, b) {
             //移除所有键名
-            return a + dig(b) + ':'; //比如 ms-widget="[{is:'ms-address-wrap', $id:'address'}]"这样极端的情况 
+            return a + dig(b) + ':'; //比如 ms-widget="[{is:'ms-address-wrap', $id:'address'}]"这样极端的情况
         }).replace(rvmKey, '$1__vmodel__.'). //转换@与##为__vmodel__
         replace(rfilterName, function (a, b) {
             //移除所有过滤器的名字
@@ -3854,7 +3845,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
      */
     function createSetter(expr, type) {
         var arr = addScope(expr, type);
-        var body = 'try{ ' + arr[0] + ' = __value__}catch(e){}';
+        var body = 'try{ ' + arr[0] + ' = __value__}catch(e){avalon.log(e, "in on dir")}';
         try {
             return new Function('__vmodel__', '__value__', body + ';');
             /* istanbul ignore next */
@@ -4039,9 +4030,9 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
     };
 
     /**
-    * 
+     *
      与Computed等共享UUID
-    */
+     */
     var obid = 1;
     function Mutation(expr, value, vm) {
         //构造函数
@@ -4680,7 +4671,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         if (msie < 9) {
             var VBClassPool = {};
             window.execScript([// jshint ignore:line
-            'Function parseVB(code)', '\tExecuteGlobal(code)', 'End Function' //转换一段文本为VB代码
+                'Function parseVB(code)', '\tExecuteGlobal(code)', 'End Function' //转换一段文本为VB代码
             ].join('\n'), 'VBScript');
 
             var VBMediator = function VBMediator(instance, accessors, name, value) {
@@ -4696,7 +4687,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                 // jshint ignore:line
                 var buffer = [];
                 buffer.push('\tPrivate [$vbsetter]', '\tPublic  [$accessors]', '\tPublic Default Function [$vbthis](ac' + timeBucket + ', s' + timeBucket + ')', '\t\tSet  [$accessors] = ac' + timeBucket + ': set [$vbsetter] = s' + timeBucket, '\t\tSet  [$vbthis]    = Me', //链式调用
-                '\tEnd Function');
+                    '\tEnd Function');
                 //添加普通属性,因为VBScript对象不能像JS那样随意增删属性，必须在这里预先定义好
                 var uniq = {
                     $vbthis: true,
@@ -4709,19 +4700,19 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                         uniq[name] = true;
                     }
                 }
-                //添加访问器属性 
+                //添加访问器属性
                 for (name in accessors) {
                     if (uniq[name]) {
                         continue;
                     }
                     uniq[name] = true;
                     buffer.push(
-                    //由于不知对方会传入什么,因此set, let都用上
-                    '\tPublic Property Let [' + name + '](val' + timeBucket + ')', //setter
-                    '\t\tCall [$vbsetter](Me, [$accessors], "' + name + '", val' + timeBucket + ')', '\tEnd Property', '\tPublic Property Set [' + name + '](val' + timeBucket + ')', //setter
-                    '\t\tCall [$vbsetter](Me, [$accessors], "' + name + '", val' + timeBucket + ')', '\tEnd Property', '\tPublic Property Get [' + name + ']', //getter
-                    '\tOn Error Resume Next', //必须优先使用set语句,否则它会误将数组当字符串返回
-                    '\t\tSet[' + name + '] = [$vbsetter](Me, [$accessors],"' + name + '")', '\tIf Err.Number <> 0 Then', '\t\t[' + name + '] = [$vbsetter](Me, [$accessors],"' + name + '")', '\tEnd If', '\tOn Error Goto 0', '\tEnd Property');
+                        //由于不知对方会传入什么,因此set, let都用上
+                        '\tPublic Property Let [' + name + '](val' + timeBucket + ')', //setter
+                        '\t\tCall [$vbsetter](Me, [$accessors], "' + name + '", val' + timeBucket + ')', '\tEnd Property', '\tPublic Property Set [' + name + '](val' + timeBucket + ')', //setter
+                        '\t\tCall [$vbsetter](Me, [$accessors], "' + name + '", val' + timeBucket + ')', '\tEnd Property', '\tPublic Property Get [' + name + ']', //getter
+                        '\tOn Error Resume Next', //必须优先使用set语句,否则它会误将数组当字符串返回
+                        '\t\tSet[' + name + '] = [$vbsetter](Me, [$accessors],"' + name + '")', '\tIf Err.Number <> 0 Then', '\t\t[' + name + '] = [$vbsetter](Me, [$accessors],"' + name + '")', '\tEnd If', '\tOn Error Goto 0', '\tEnd Property');
                 }
 
                 for (name in properties) {
@@ -4739,7 +4730,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                     className = avalon.makeHashCode('VBClass');
                     window.parseVB('Class ' + className + body);
                     window.parseVB(['Function ' + className + 'Factory(acc, vbm)', //创建实例并传入两个关键的参数
-                    '\tDim o', '\tSet o = (New ' + className + ')(acc, vbm)', '\tSet ' + className + 'Factory = o', 'End Function'].join('\r\n'));
+                        '\tDim o', '\tSet o = (New ' + className + ')(acc, vbm)', '\tSet ' + className + 'Factory = o', 'End Function'].join('\r\n'));
                     VBClassPool[body] = className;
                 }
                 var ret = window[className + 'Factory'](accessors, VBMediator); //得到其产品
@@ -4824,7 +4815,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                     if (this.deep) {
                         var deep = typeof this.deep === 'number' ? this.deep : 6;
                         for (var i in newVal) {
-                            //diff差异点  
+                            //diff差异点
                             if (!deepEquals(newVal[i], oldVal[i], 4)) {
                                 this.value = newVal;
                                 return true;
@@ -5118,9 +5109,9 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
             if (staggerTime) {
                 if (option.staggerKey) {
                     var stagger = staggerCache.get(option.staggerKey) || staggerCache.put(option.staggerKey, {
-                        count: 0,
-                        items: 0
-                    });
+                            count: 0,
+                            items: 0
+                        });
                     stagger.count++;
                     stagger.items++;
                 }
@@ -5245,48 +5236,48 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         return toMillisecond(tranDuration) || toMillisecond(animDuration);
     }
     /**
-     * 
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <script src="dist/avalon.js"></script>
-            <script>
-                avalon.effect('animate')
-                var vm = avalon.define({
+     *
+     <!DOCTYPE html>
+     <html>
+     <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <script src="dist/avalon.js"></script>
+     <script>
+     avalon.effect('animate')
+     var vm = avalon.define({
                     $id: 'ani',
                     a: true
                 })
-            </script>
-            <style>
-                .animate-enter, .animate-leave{
+     </script>
+     <style>
+     .animate-enter, .animate-leave{
                     width:100px;
                     height:100px;
                     background: #29b6f6;
                     transition:all 2s;
-                    -moz-transition: all 2s; 
+                    -moz-transition: all 2s;
                     -webkit-transition: all 2s;
                     -o-transition:all 2s;
-                }  
-                .animate-enter-active, .animate-leave{
+                }
+     .animate-enter-active, .animate-leave{
                     width:300px;
                     height:300px;
                 }
-                .animate-leave-active{
+     .animate-leave-active{
                     width:100px;
                     height:100px;
                 }
-            </style>
-        </head>
-        <body>
-            <div :controller='ani' >
-                <p><input type='button' value='click' :click='@a =!@a'></p>
-                <div :effect="{is:'animate',action:@a}"></div>
-            </div>
-    </body>
-    </html>
-     * 
+     </style>
+     </head>
+     <body>
+     <div :controller='ani' >
+     <p><input type='button' value='click' :click='@a =!@a'></p>
+     <div :effect="{is:'animate',action:@a}"></div>
+     </div>
+     </body>
+     </html>
+     *
      */
 
     var none = 'none';
@@ -5333,8 +5324,8 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                         }
                     }
                     if (dom.style.display === '' && avalon(dom).css('display') === none &&
-                    // fix firefox BUG,必须挂到页面上
-                    avalon.contains(dom.ownerDocument, dom)) {
+                        // fix firefox BUG,必须挂到页面上
+                        avalon.contains(dom.ownerDocument, dom)) {
                         value = parseDisplay(dom);
                     }
                 } else {
@@ -5495,8 +5486,8 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
             var vdom = this.node;
             var underline = this.name.replace('ms-on-', 'e').replace('-', '_');
             var uuid = underline + '_' + this.expr.replace(/\s/g, '').replace(/[^$a-z]/ig, function (e) {
-                return e.charCodeAt(0);
-            });
+                    return e.charCodeAt(0);
+                });
             var fn = avalon.eventListeners[uuid];
             if (!fn) {
                 var arr = addScope(this.expr);
@@ -5768,7 +5759,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
     }
 
     /**
-     * 
+     *
      * @param {type} fragment
      * @param {type} this
      * @param {type} index
@@ -6032,7 +6023,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                 field.setCaret(dom, pos);
             }
             //vm.aaa = '1234567890'
-            //处理 <input ms-duplex='@aaa|limitBy(8)'/>{{@aaa}} 这种格式化同步不一致的情况 
+            //处理 <input ms-duplex='@aaa|limitBy(8)'/>{{@aaa}} 这种格式化同步不一致的情况
         },
         radio: function radio() {
             var field = this;
@@ -6311,7 +6302,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
             lookupOption(this.node, a);
         },
         contenteditable: function contenteditable() {
-            //处理单个innerHTML 
+            //处理单个innerHTML
 
             var vnodes = fromString(this.value);
             var fragment = createFragment();
@@ -6328,7 +6319,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         }
     };
 
-    /* 
+    /*
      * 通过绑定事件同步vmodel
      * 总共有三种方式同步视图
      * 1. 各种事件 input, change, click, propertychange, keydown...
@@ -6400,7 +6391,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                         if (!/\[native code\]/.test(window$1.Int8Array)) {
                             events.keydown = updateModelKeyDown; //safari < 5 opera < 11
                             events.paste = updateModelDelay; //safari < 5
-                            events.cut = updateModelDelay; //safari < 5 
+                            events.cut = updateModelDelay; //safari < 5
                             if (window$1.netscape) {
                                 // Firefox <= 3.6 doesn't fire the 'input' event when text is filled in through autocomplete
                                 events.DOMAutoComplete = updateDataHandle;
@@ -6412,7 +6403,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
         }
 
         if (/password|text/.test(dom.type)) {
-            events.focus = openCaret; //判定是否使用光标修正功能 
+            events.focus = openCaret; //判定是否使用光标修正功能
             events.blur = closeCaret;
             data.getCaret = getCaret;
             data.setCaret = setCaret;
@@ -6759,7 +6750,8 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
             dom._ms_validate_ = validator;
             var fields = validator.fields;
             collectFeild(vdom.children, fields, validator);
-            avalon.bind(document, 'focusin', function (e) {
+            var type = window.netscape ? 'keypress' : 'focusin';
+            avalon.bind(document, type, function (e) {
                 var dom = e.target;
                 var duplex = dom._ms_duplex_;
                 var vdom = (duplex || {}).vdom;
@@ -7259,7 +7251,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
 
         /**
          * 从文本节点获取指令
-         * @param {type} vdom 
+         * @param {type} vdom
          * @param {type} scope
          * @returns {undefined}
          */
@@ -7274,7 +7266,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
 
         /**
          * 从注释节点获取指令
-         * @param {type} vdom 
+         * @param {type} vdom
          * @param {type} scope
          * @param {type} parentChildren
          * @returns {undefined}
@@ -7288,7 +7280,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
 
         /**
          * 从元素节点的nodeName与属性中获取指令
-         * @param {type} vdom 
+         * @param {type} vdom
          * @param {type} scope
          * @param {type} parentChildren
          * @param {type} isRoot 用于执行complete方法
@@ -7330,7 +7322,7 @@ https://github.com/RubyLouvre/avalon/tree/2.2.4
                 var temp = templateCaches && templateCaches[$id];
                 if (temp) {
                     avalon.log('前端再次渲染后端传过来的模板');
-                    var node = fromString(tmpl)[0];
+                    var node = fromString(temp)[0];
                     for (var i in node) {
                         vdom[i] = node[i];
                     }
