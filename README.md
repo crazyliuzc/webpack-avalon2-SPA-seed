@@ -20,6 +20,8 @@
 - 升级avalon到"2017-4-19:16:1 version 2.2.5"，页面访问正常；再向上升级从"2017-4-19:17:56 version 2.2.5"版本到
 
   最新版"2017-5-5:10:30 version 2.2.6"，都有页面卡死、浏览器卡死问题；
+  
+  thomasyus发现了是ms-view组件的xmp标签的问题，改成wbr或者template就没有这个问题了
 
   在webpack.config.js的160行可以切换
 
