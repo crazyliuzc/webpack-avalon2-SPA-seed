@@ -1,5 +1,7 @@
 # webpack-avalon2-SPA-seed #
 
+## Avalon作者已经不再更新，请更换框架吧
+
 ## 项目介绍
 本项目是一个参考诸多大神项目，利用webpack整合avalon2.2.4和mmRouter路由的简单项目：
 - 整合avalon最新主干代码
