@@ -1,6 +1,6 @@
 # webpack-avalon2-SPA-seed #
 
-## Avalon作者已经不再更新，请更换框架吧
+## Avalon作者已经不再更新，请更换框架吧，推荐[司徒正美大神的anujs](https://rubylouvre.github.io/anu/)
 
 ## 项目介绍
 本项目是一个参考诸多大神项目，利用webpack整合avalon2.2.4和mmRouter路由的简单项目：
